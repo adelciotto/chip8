@@ -1,0 +1,9 @@
+root = true
+
+[*]
+end_of_line = 1f
+insert_final_newline = true
+
+[{*.c,*.h,CMakeLists.txt}]
+charset = utf-8
+indent_size = 4
