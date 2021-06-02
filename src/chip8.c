@@ -209,15 +209,16 @@ static void DecodeAndExecIns(Chip8 *chip8, Instruction ins)
 		int endY = MIN(startY + n, CHIP8_H);
 
 		// Loop over each row of the sprite.
-		for (int y = startY; y < endY; y++) {
+		for (int yline = startY; yline < endY; yline++) {
 			// Get the current byte from sprite.
-			uint8_t spriteB = mem[chip8->I + (y - startY)];
+			uint8_t spriteB = mem[chip8->I + (yline - startY)];
 			// Loop over each pixel of the sprite and determine if draw needed.
-			for (int x = startX; x < endX; x++) {
+			for (int xline = startX; xline < endX; xline++) {
 				// Get the pixel in sprite byte.
-				uint8_t spriteP = (spriteB & (0x80 >> (x - startX))) ? 1 : 0;
+				uint8_t spriteP =
+					(spriteB & (0x80 >> (xline - startX))) ? 1 : 0;
 				// Get the display byte and pixel.
-				int index = y * CHIP8_W + x;
+				int index = yline * CHIP8_W + xline;
 				int dispIndx = index / 8;
 				int offset = index % 8;
 				uint8_t dispB = display[dispIndx];
@@ -231,7 +232,7 @@ static void DecodeAndExecIns(Chip8 *chip8, Instruction ins)
 				}
 				// If the sprite pixel is on, but display pixel is not then
 				// set the pixel.
-				else if (spriteP && !dispP) {
+				else if (spriteP) {
 					display[dispIndx] |= (0x80 >> offset);
 				}
 			}

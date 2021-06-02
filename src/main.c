@@ -13,7 +13,7 @@
 
 static int optionWinScale = 8;
 static bool optionFullscreen = false;
-static const char *optionRomPath = "opcode_test.ch8";
+static const char *optionRomPath = "test_opcode.ch8";
 static int optionCycles = 20;
 static VMColorPaletteType optionPalette = VMCOLOR_PALETTE_NOKIA;
 
@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "Failed to init video!\n");
 		exit(EXIT_FAILURE);
 	}
-	int refreshRate = VideoGetRefreshRate();
+	refreshRate = VideoGetRefreshRate();
 	if (refreshRate == 0) {
 		refreshRate = 60;
 		fprintf(stderr,
@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
 	}
 
 	double targetSecsPerFrame = 1.0 / (double)refreshRate;
-	uint64_t lastCounter, metricsCounter;
+	uint64_t lastCounter = 0, metricsCounter = 0;
 	uint64_t perfFreq = SDL_GetPerformanceFrequency();
 
 	running = true;
@@ -103,7 +103,8 @@ int main(int argc, char *argv[])
 			targetSecsPerFrame) {
 			double elapsed =
 				GetElapsedSeconds(SDL_GetPerformanceCounter(), lastCounter);
-			int32_t timeToSleep = ((targetSecsPerFrame - elapsed) * 1000) - 1;
+			int32_t timeToSleep =
+				(int32_t)((targetSecsPerFrame - elapsed) * 1000.0) - 1;
 			if (timeToSleep > 0) {
 				SDL_Delay(timeToSleep);
 			}
@@ -386,4 +387,3 @@ static void ProcessEvent(SDL_Event *event)
 	} break;
 	}
 }
-

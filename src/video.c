@@ -165,8 +165,8 @@ int VideoToggleFullscreen()
 void VideoScreenshot()
 {
 	char imagePath[300];
-    time_t t = time(NULL);
-        struct tm tm = *localtime(&t);
+	time_t t = time(NULL);
+	struct tm tm = *localtime(&t);
 	snprintf(imagePath, sizeof(imagePath),
 			 "CHIP8-%s_%d-%02d-%02dT%02d-%02d-%02d.png", "screenshot",
 			 tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour,
@@ -181,24 +181,24 @@ void VideoScreenshot()
 	}
 
 	int stride = w * comp;
-	unsigned char *pixels = malloc(h * stride);
-	if (!pixels) {
+	unsigned char *screen = malloc(h * stride);
+	if (!screen) {
 		fprintf(stderr, "Failed to get malloc pixel buffer for screenshot!\n");
 		return;
 	}
 
-	if (SDL_RenderReadPixels(renderer, NULL, SDL_PIXELFORMAT_RGB24, pixels,
+	if (SDL_RenderReadPixels(renderer, NULL, SDL_PIXELFORMAT_RGB24, screen,
 							 stride) != 0) {
 		fprintf(stderr, "Failed to read renderer pixels! %s\n", SDL_GetError());
 		return;
 	}
 
-	if (stbi_write_png(imagePath, w, h, comp, pixels, stride) == 0)
+	if (stbi_write_png(imagePath, w, h, comp, screen, stride) == 0)
 		fprintf(stderr, "Failed to save screenshot!\n");
 	else
 		printf("Screenshot saved to %s!\n", imagePath);
 
-	free(pixels);
+	free(screen);
 }
 
 static int LimitUpscaleTextureSize(int *widthUpscale, int *heightUpscale);

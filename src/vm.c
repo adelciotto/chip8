@@ -79,7 +79,7 @@ int VMLoadRom(const char *filePath)
 	return 0;
 
 error:
-	if (!file) {
+	if (file) {
 		fclose(file);
 	}
 	return -1;
