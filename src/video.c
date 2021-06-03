@@ -151,8 +151,8 @@ int VideoToggleFullscreen()
         SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
         SDL_ShowCursor(SDL_DISABLE);
     } else {
-        SDL_SetWindowSize(window, winWidth, winHeight);
         SDL_SetWindowFullscreen(window, false);
+        SDL_SetWindowSize(window, winWidth, winHeight);
         SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED,
                               SDL_WINDOWPOS_CENTERED);
         SDL_ShowCursor(SDL_ENABLE);
