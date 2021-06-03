@@ -7,33 +7,33 @@
 #define CHIP8_W 64
 #define CHIP8_H 32
 #define CHIP8_TIMER_FREQ 60
-#define CHIP8_INSTRUCTION_FREQ 900
 #define CHIP8_USERMEM_START 0x200
 #define CHIP8_USERMEM_END 0xFFF
 #define CHIP8_USERMEM_TOTAL (CHIP8_USERMEM_END - CHIP8_USERMEM_START)
+#define CHIP8_STACK_MAX 12
 
 #define MIN(a, b) ((a) > (b) ? (b) : (a))
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 
 // The CHIP-8 system.
 typedef union {
-	uint8_t memory[0x1000];
+    uint8_t memory[0x1000];
 
-	struct {
-		uint8_t V[16];
-		uint8_t delayTimer;
-		uint8_t soundTimer;
-		uint8_t SP;
-		uint8_t keys[16];
-		uint8_t waitingKey;
+    struct {
+        uint8_t V[16];
+        uint8_t delayTimer;
+        uint8_t soundTimer;
+        uint8_t SP;
+        uint8_t keys[16];
+        uint8_t waitingKey;
 
-		uint8_t display[(CHIP8_W * CHIP8_H) / 8];
-		uint8_t font[16 * 5];
+        uint8_t display[(CHIP8_W * CHIP8_H) / 8];
+        uint8_t font[16 * 5];
 
-		uint16_t PC;
-		uint16_t stack[12];
-		uint16_t I;
-	};
+        uint16_t PC;
+        uint16_t stack[CHIP8_STACK_MAX];
+        uint16_t I;
+    };
 } Chip8;
 
 // Chip8Init() - Initialises the CHIP-8 CPU.

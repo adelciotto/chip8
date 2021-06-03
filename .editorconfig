@@ -7,3 +7,4 @@ insert_final_newline = true
 [{*.c,*.h,CMakeLists.txt}]
 charset = utf-8
 indent_size = 4
+indent_style = space

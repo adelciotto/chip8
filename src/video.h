@@ -15,4 +15,6 @@ int VideoToggleFullscreen();
 
 void VideoScreenshot();
 
+void VideoSetWindowTitle(const char *fmt, ...);
+
 #endif // CHIP8_VIDEO_H
