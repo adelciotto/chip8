@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "audio.h"
+#include "sound.h"
 #include "vm.h"
 
 static SDL_AudioDeviceID audioDevice = 0;
@@ -19,11 +19,11 @@ static uint32_t runningSampleIndex = 0;
 static int squareWavePeriod;
 static int halfSquareWavePeriod;
 
-int AudioInit(int refreshRate)
+int SoundInit(int refreshRate)
 {
     if (SDL_GetNumAudioDevices(0) <= 0) {
         audioDevice = 0;
-        fprintf(stderr, "No audio device found!\n");
+        fprintf(stderr, "No audio devices found!\n");
         return 0;
     }
 
@@ -58,12 +58,12 @@ int AudioInit(int refreshRate)
     SDL_PauseAudioDevice(audioDevice, 0);
 
     printf(
-        "Audio successfully initialised! freq: %d, latency samples: %d, buffer size: %d\n",
+        "Sound module initialised! freq: %d, latency samples: %d, buffer size: %d\n",
         audioSampleCount, latencySampleCount, audioBufferLen);
     return 0;
 }
 
-void AudioDestroy()
+void SoundDestroy()
 {
     if (audioBuffer) {
         free(audioBuffer);
@@ -72,13 +72,13 @@ void AudioDestroy()
         SDL_CloseAudioDevice(audioDevice);
     }
     audioDevice = 0;
+
+    printf("Sound module destroyed!\n");
 }
 
-void AudioPush()
+void SoundPlay()
 {
-    int soundTimer = VMGetSoundTimer();
-
-    if (audioDevice == 0 || soundTimer <= 0) {
+    if (audioDevice == 0 || VMGetSoundTimer() <= 0) {
         return;
     }
 

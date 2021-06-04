@@ -1,6 +1,10 @@
 #ifndef CHIP8_VM_H
 #define CHIP8_VM_H
 
+// Virtual Machine module.
+// Manages the entire CHIP8 system and provides a layer of abstraction for the
+// host application.
+
 #include <stdbool.h>
 #include <stdint.h>
 

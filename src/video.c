@@ -5,7 +5,6 @@
 #include <assert.h>
 #include <time.h>
 
-#include "chip8.h"
 #include "vm.h"
 #include "video.h"
 
@@ -77,6 +76,8 @@ int VideoInit(const char *title, int winScale, bool fullscreen)
         return -1;
     }
 
+    printf("Video module initialised!\n");
+
     return 0;
 }
 
@@ -94,6 +95,8 @@ void VideoDestroy()
     if (window) {
         SDL_DestroyWindow(window);
     }
+
+    printf("Video module destroyed!\n");
 }
 
 void VideoPresent()
@@ -261,7 +264,7 @@ static int SetupUpscaleTexture()
     lastTextureUpscaleW = screenTextureW;
     lastTextureUpscaleH = screenTextureH;
 
-    printf("SDL upscale texture initialized! Size: %dx%d, upscale: %dx%d\n",
+    printf("Upscale texture initialized! Size: %dx%d, upscale: %dx%d\n",
            screenTextureW, screenTextureH, widthUpscale, heightUpscale);
     return 0;
 }

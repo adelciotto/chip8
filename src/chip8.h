@@ -1,6 +1,10 @@
 #ifndef _CHIP8_H_
 #define _CHIP8_H_
 
+// CHIP8 module.
+// Provides low level emulation of the CHIP8 cpu, graphics and audio. Used only
+// by the VM module.
+
 #include <stdbool.h>
 #include <stdint.h>
 

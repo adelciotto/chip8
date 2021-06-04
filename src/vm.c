@@ -3,7 +3,7 @@
 
 #include "vm.h"
 
-#define DEFAULT_REFRESHRATE 60
+#define DEFAULT_REFRESH_RATE 60
 
 static Chip8 chip8;
 static int instructionsPerFrame;
@@ -30,7 +30,7 @@ void VMInit(int cycles, int refreshRate, VMColorPaletteType paletteType)
 {
     Chip8Init(&chip8);
 
-    int targetFreq = cycles * DEFAULT_REFRESHRATE;
+    int targetFreq = cycles * DEFAULT_REFRESH_RATE;
     instructionsPerFrame = MAX(targetFreq / refreshRate, 1);
     printf("VM instruction freq: %d, ins/f: %d, real refresh rate: %dhz\n",
            targetFreq, instructionsPerFrame, refreshRate);
@@ -38,6 +38,8 @@ void VMInit(int cycles, int refreshRate, VMColorPaletteType paletteType)
     timerDelta = 1.0 / (double)CHIP8_TIMER_FREQ;
     memcpy(palette, palettes[paletteType], sizeof(VMColorPalette));
     paused = false;
+
+    printf("VM module initialised!\n");
 }
 
 int VMLoadRom(const char *filePath)
