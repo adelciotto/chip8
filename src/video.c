@@ -2,7 +2,6 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
-#include <assert.h>
 #include <time.h>
 
 #include "vm.h"
@@ -24,10 +23,15 @@ static int lastTextureUpscaleH = 0;
 
 static uint32_t pixels[CHIP8_W * CHIP8_H];
 
+static bool initialized = false;
+
 static int SetupUpscaleTexture();
 
 int VideoInit(const char *title, int winScale, bool fullscreen)
 {
+    assert(title != NULL);
+    assert(winScale > 0);
+
     winWidth = CHIP8_W * winScale;
     winHeight = CHIP8_H * winScale;
     winFullscreen = fullscreen;
@@ -78,6 +82,12 @@ int VideoInit(const char *title, int winScale, bool fullscreen)
 
     printf("Video module initialised!\n");
 
+    assert(window != NULL);
+    assert(renderer != NULL);
+    assert(intermediateTexture != NULL);
+    assert(upscaleTexture != NULL);
+    initialized = true;
+
     return 0;
 }
 
@@ -101,6 +111,8 @@ void VideoDestroy()
 
 void VideoPresent()
 {
+    assert(initialized);
+
     VMColorPalette palette;
     VMGetColorPalette(palette);
     uint8_t *display = VMGetDisplayPixels();
@@ -132,7 +144,7 @@ void VideoPresent()
 
 int VideoGetRefreshRate()
 {
-    assert(window != NULL);
+    assert(initialized);
 
     int displayIndex = SDL_GetWindowDisplayIndex(window);
     SDL_DisplayMode mode;
@@ -148,6 +160,8 @@ int VideoGetRefreshRate()
 
 int VideoToggleFullscreen()
 {
+    assert(initialized);
+
     winFullscreen = !winFullscreen;
 
     if (winFullscreen) {
@@ -170,6 +184,8 @@ int VideoToggleFullscreen()
 
 void VideoScreenshot()
 {
+    assert(initialized);
+
     char imagePath[300];
     time_t t = time(NULL);
     struct tm tm = *localtime(&t);
@@ -213,6 +229,9 @@ void VideoScreenshot()
 
 void VideoSetWindowTitle(const char *format, ...)
 {
+    assert(initialized);
+    assert(format != NULL);
+
     memset(winTitle, 0, sizeof(winTitle));
 
     va_list args;

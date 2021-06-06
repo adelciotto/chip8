@@ -5,8 +5,7 @@
 // Provides low level emulation of the CHIP8 cpu, graphics and audio. Used only
 // by the VM module.
 
-#include <stdbool.h>
-#include <stdint.h>
+#include "def.h"
 
 #define CHIP8_W 64
 #define CHIP8_H 32
@@ -15,9 +14,6 @@
 #define CHIP8_USERMEM_END 0xFFF
 #define CHIP8_USERMEM_TOTAL (CHIP8_USERMEM_END - CHIP8_USERMEM_START)
 #define CHIP8_STACK_MAX 12
-
-#define MIN(a, b) ((a) > (b) ? (b) : (a))
-#define MAX(a, b) ((a) > (b) ? (a) : (b))
 
 // The CHIP-8 system.
 typedef union {

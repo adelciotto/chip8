@@ -1,23 +1,14 @@
 #include "SDL.h"
 
-#include <stdio.h>
-
 #include "input.h"
 #include "video.h"
 #include "vm.h"
 
-static bool closeRequested;
+static bool closeRequested = false;
 
 static bool CheckFullscreenToggle(SDL_Keysym sym);
 static bool CheckScreenshot(SDL_Keysym sym);
 static int MapKey(SDL_Scancode sc);
-
-void InputInit()
-{
-    closeRequested = false;
-
-    printf("Input module initialised!\n");
-}
 
 void InputPollEvents()
 {

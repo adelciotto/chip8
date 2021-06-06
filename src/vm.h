@@ -5,10 +5,8 @@
 // Manages the entire CHIP8 system and provides a layer of abstraction for the
 // host application.
 
-#include <stdbool.h>
-#include <stdint.h>
-
 #include "chip8.h"
+#include "def.h"
 
 typedef enum {
     VMCOLOR_PALETTE_ORIGINAL,

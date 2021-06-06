@@ -1,11 +1,8 @@
 #include "SDL.h"
 
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "sound.h"
 #include "vm.h"
+#include "def.h"
 
 static SDL_AudioDeviceID audioDevice = 0;
 static int audioSampleCount = 0;
@@ -21,6 +18,8 @@ static int halfSquareWavePeriod;
 
 int SoundInit(int refreshRate)
 {
+    assert(refreshRate > 0);
+
     if (SDL_GetNumAudioDevices(0) <= 0) {
         audioDevice = 0;
         fprintf(stderr, "No audio devices found!\n");
@@ -56,6 +55,8 @@ int SoundInit(int refreshRate)
     halfSquareWavePeriod = squareWavePeriod / 2;
 
     SDL_PauseAudioDevice(audioDevice, 0);
+
+    assert(audioDevice != 0);
 
     printf(
         "Sound module initialised! freq: %d, latency samples: %d, buffer size: %d\n",

@@ -1,7 +1,7 @@
 #ifndef CHIP8_VIDEO_H
 #define CHIP8_VIDEO_H
 
-#include <stdbool.h>
+#include "def.h"
 
 // Video module.
 // Presents the CHIP8 display to the screen using SDL.

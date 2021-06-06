@@ -12,6 +12,8 @@ static double timerAccum = 0;
 static bool paused;
 static VMColorPalette palette;
 
+static bool initialized = false;
+
 // clang-format off
 static VMColorPalette palettes[] = {
 	{ 0xFF000000, 0xFFFFFFFF },		// PALETTE_ORIGINAL
@@ -40,10 +42,16 @@ void VMInit(int cycles, int refreshRate, VMColorPaletteType paletteType)
     paused = false;
 
     printf("VM module initialised!\n");
+
+    assert(timerDelta != 0);
+    initialized = true;
 }
 
 int VMLoadRom(const char *filePath)
 {
+    assert(initialized);
+    assert(filePath != NULL);
+
     FILE *file = NULL;
 
     file = fopen(filePath, "rb");
@@ -89,6 +97,8 @@ error:
 
 void VMUpdate(double dt)
 {
+    assert(initialized);
+
     if (paused) {
         return;
     }
@@ -116,21 +126,29 @@ void VMUpdate(double dt)
 
 uint8_t *VMGetDisplayPixels()
 {
+    assert(initialized);
+
     return chip8.display;
 }
 
 int VMGetSoundTimer()
 {
+    assert(initialized);
+
     return (int)chip8.soundTimer;
 }
 
 void VMGetColorPalette(VMColorPalette outPalette)
 {
+    assert(initialized);
+
     memcpy(outPalette, palette, sizeof(VMColorPalette));
 }
 
 void VMSetKey(uint8_t key)
 {
+    assert(initialized);
+
     chip8.keys[key % 16] = 1;
 
     if (Chip8WaitingForKey(&chip8)) {
@@ -142,10 +160,14 @@ void VMSetKey(uint8_t key)
 
 void VMClearKey(uint8_t key)
 {
+    assert(initialized);
+
     chip8.keys[key % 16] = 0;
 }
 
 void VMTogglePause(bool pause)
 {
+    assert(initialized);
+
     paused = pause;
 }

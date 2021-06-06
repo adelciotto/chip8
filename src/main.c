@@ -64,8 +64,6 @@ int main(int argc, char *argv[])
         exit(EXIT_SUCCESS);
     }
 
-    InputInit();
-
     VMInit(optionCycles, refreshRate, optionPalette);
 
     if (VMLoadRom(optionRomPath) != 0) {
@@ -98,6 +96,8 @@ int main(int argc, char *argv[])
             if (timeToSleep > 0) {
                 SDL_Delay(timeToSleep);
             }
+            // assert(GetElapsedSeconds(GetPerformanceCounter(), lastCounter) <
+            //        targetSecsPerFrame);
             while (GetElapsedSeconds(GetPerformanceCounter(), lastCounter) <
                    targetSecsPerFrame) {
                 // Waiting...
