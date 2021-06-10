@@ -1,8 +1,7 @@
 #include "SDL.h"
 
-#include "sound.h"
+#include "platform.h"
 #include "vm.h"
-#include "def.h"
 
 static SDL_AudioDeviceID audioDevice = 0;
 static int audioSampleCount = 0;
@@ -16,21 +15,24 @@ static uint32_t runningSampleIndex = 0;
 static int squareWavePeriod;
 static int halfSquareWavePeriod;
 
-int SoundInit(int refreshRate)
+int SoundInit()
 {
-    assert(refreshRate > 0);
-
     if (SDL_GetNumAudioDevices(0) <= 0) {
         audioDevice = 0;
         fprintf(stderr, "No audio devices found!\n");
         return 0;
     }
 
+    int refreshRate = VideoGetRefreshRate();
+    assert(refreshRate > 0);
+
     SDL_AudioSpec want, have;
     SDL_memset(&want, 0, sizeof(want));
     want.freq = 48000;
     want.format = AUDIO_S16LSB;
     want.channels = 1;
+    // The emulators FPS is locked to the monitors refresh rate. So use this
+    // to calculate how many samples are required per frame.
     want.samples = want.freq * 1 / refreshRate;
 
     audioDevice = SDL_OpenAudioDevice(NULL, 0, &want, &have, 0);

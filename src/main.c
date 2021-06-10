@@ -5,10 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "platform.h"
 #include "vm.h"
-#include "sound.h"
-#include "video.h"
-#include "input.h"
 
 static int optionWinScale = 8;
 static bool optionFullscreen = false;
@@ -53,18 +51,18 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
     refreshRate = VideoGetRefreshRate();
-    if (refreshRate == 0) {
-        refreshRate = 60;
-        fprintf(stderr,
-                "Failed to get monitor refresh rate! Defaulting to 60hz\n");
-    }
 
-    if (SoundInit(refreshRate) != 0) {
+    if (SoundInit() != 0) {
         fprintf(stderr, "Failed to init audio!\n");
         exit(EXIT_SUCCESS);
     }
 
-    VMInit(optionCycles, refreshRate, optionPalette);
+    // TODO: CHIP8 uses LUT for instructions.
+    int targetFreq = optionCycles * 60;
+    int cyclesPerTic = MAX(targetFreq / refreshRate, 1);
+    VMInit(cyclesPerTic, optionPalette);
+    printf("VM clock rate: %dhz, cycles/tic: %d, tics/sec: %d\n", targetFreq,
+           cyclesPerTic, refreshRate);
 
     if (VMLoadRom(optionRomPath) != 0) {
         fprintf(stderr, "Failed to load CHIP-8 rom %s!\n", optionRomPath);
@@ -78,7 +76,7 @@ int main(int argc, char *argv[])
     while (!InputCloseRequested()) {
         InputPollEvents();
 
-        VMUpdate(targetSecsPerFrame);
+        VMTic(targetSecsPerFrame);
 
         SoundPlay();
 

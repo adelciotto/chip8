@@ -1,7 +1,6 @@
 #include "SDL.h"
 
-#include "input.h"
-#include "video.h"
+#include "platform.h"
 #include "vm.h"
 
 static bool closeRequested = false;

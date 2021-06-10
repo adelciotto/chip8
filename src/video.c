@@ -4,8 +4,8 @@
 
 #include <time.h>
 
+#include "platform.h"
 #include "vm.h"
-#include "video.h"
 
 // 4k resolution 4096x2160 is 8,847,360
 #define MAX_SCREEN_TEXTURE_PIXELS 8847360
@@ -14,6 +14,7 @@ static SDL_Window *window = NULL;
 static int winWidth, winHeight;
 static char winTitle[512];
 static bool winFullscreen;
+static int refreshRate = 60;
 static SDL_Renderer *renderer = NULL;
 static SDL_RendererInfo rendererInfo;
 static SDL_Texture *intermediateTexture = NULL;
@@ -47,6 +48,20 @@ int VideoInit(const char *title, int winScale, bool fullscreen)
     if (!window) {
         fprintf(stderr, "Failed to create SDL Window! %s\n", SDL_GetError());
         return -1;
+    }
+
+    int displayIndex = SDL_GetWindowDisplayIndex(window);
+    SDL_DisplayMode mode;
+    if (SDL_GetDesktopDisplayMode(displayIndex, &mode) == 0) {
+        if (mode.refresh_rate > 0) {
+            refreshRate = mode.refresh_rate;
+        } else {
+            fprintf(stderr, "Failed to get primary monitor refresh rate! "
+                            "Defaulting to 60hz\n");
+        }
+    } else {
+        fprintf(stderr, "Failed to get primary monitor refresh rate! "
+                        "Defaulting to 60hz\n");
     }
 
     renderer = SDL_CreateRenderer(
@@ -145,15 +160,6 @@ void VideoPresent()
 int VideoGetRefreshRate()
 {
     assert(initialized);
-
-    int displayIndex = SDL_GetWindowDisplayIndex(window);
-    SDL_DisplayMode mode;
-    int refreshRate = 0;
-    if (SDL_GetDesktopDisplayMode(displayIndex, &mode) == 0) {
-        if (mode.refresh_rate > 0) {
-            refreshRate = mode.refresh_rate;
-        }
-    }
 
     return refreshRate;
 }

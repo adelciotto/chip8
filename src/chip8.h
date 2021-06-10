@@ -15,8 +15,21 @@
 #define CHIP8_USERMEM_TOTAL (CHIP8_USERMEM_END - CHIP8_USERMEM_START)
 #define CHIP8_STACK_MAX 12
 
+typedef union tChip8WaitingKey {
+    uint8_t val;
+
+    struct {
+        // First 4 bits for the register that stores waiting key.
+        unsigned int reg : 4;
+        // 5th bit determines if waiting is enabled.
+        unsigned int waiting : 1;
+        // Unused bits.
+        unsigned int unused : 3;
+    };
+} Chip8WaitingKey;
+
 // The CHIP-8 system.
-typedef union {
+typedef union tChip8 {
     uint8_t memory[0x1000];
 
     struct {
@@ -25,7 +38,7 @@ typedef union {
         uint8_t soundTimer;
         uint8_t SP;
         uint8_t keys[16];
-        uint8_t waitingKey;
+        Chip8WaitingKey waitingKey;
 
         uint8_t display[(CHIP8_W * CHIP8_H) / 8];
         uint8_t font[16 * 5];

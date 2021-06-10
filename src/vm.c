@@ -1,18 +1,18 @@
-#include <stdio.h>
-#include <string.h>
-
 #include "vm.h"
 
-#define DEFAULT_REFRESH_RATE 60
+struct VM {
+    Chip8 chip8;
+    VMColorPalette palette;
 
-static Chip8 chip8;
-static int instructionsPerFrame;
-static double timerDelta;
-static double timerAccum = 0;
-static bool paused;
-static VMColorPalette palette;
+    int cyclesPerTic;
+    double timerDelta;
+    double timerAccum;
 
-static bool initialized = false;
+    bool paused;
+    bool initialized;
+};
+
+static struct VM vm;
 
 // clang-format off
 static VMColorPalette palettes[] = {
@@ -28,28 +28,22 @@ static VMColorPalette palettes[] = {
 };
 // clang-format on
 
-void VMInit(int cycles, int refreshRate, VMColorPaletteType paletteType)
+void VMInit(int cyclesPerTic, VMColorPaletteType paletteType)
 {
-    Chip8Init(&chip8);
+    Chip8Init(&vm.chip8);
+    memcpy(vm.palette, palettes[paletteType], sizeof(VMColorPalette));
 
-    int targetFreq = cycles * DEFAULT_REFRESH_RATE;
-    instructionsPerFrame = MAX(targetFreq / refreshRate, 1);
-    printf("VM instruction freq: %d, ins/f: %d, real refresh rate: %dhz\n",
-           targetFreq, instructionsPerFrame, refreshRate);
+    vm.cyclesPerTic = cyclesPerTic;
+    vm.timerDelta = 1.0 / (double)CHIP8_TIMER_FREQ;
+    vm.timerAccum = 0;
 
-    timerDelta = 1.0 / (double)CHIP8_TIMER_FREQ;
-    memcpy(palette, palettes[paletteType], sizeof(VMColorPalette));
-    paused = false;
-
-    printf("VM module initialised!\n");
-
-    assert(timerDelta != 0);
-    initialized = true;
+    vm.paused = false;
+    vm.initialized = true;
 }
 
 int VMLoadRom(const char *filePath)
 {
-    assert(initialized);
+    assert(vm.initialized);
     assert(filePath != NULL);
 
     FILE *file = NULL;
@@ -73,7 +67,8 @@ int VMLoadRom(const char *filePath)
     rewind(file);
 
     // Read the rom program into CHIP8 user memory space.
-    size_t bytesRead = fread(chip8.memory + CHIP8_USERMEM_START, 1, sz, file);
+    size_t bytesRead =
+        fread(vm.chip8.memory + CHIP8_USERMEM_START, 1, sz, file);
     if (bytesRead != sz) {
         fprintf(
             stderr,
@@ -83,7 +78,7 @@ int VMLoadRom(const char *filePath)
     }
 
     // Set the CHIP-8 program counter to the start of user memory.
-    chip8.PC = CHIP8_USERMEM_START;
+    vm.chip8.PC = CHIP8_USERMEM_START;
 
     fclose(file);
     return 0;
@@ -95,79 +90,77 @@ error:
     return -1;
 }
 
-void VMUpdate(double dt)
+void VMTic(double deltaPerTic)
 {
-    assert(initialized);
+    assert(vm.initialized);
 
-    if (paused) {
+    if (vm.paused) {
         return;
     }
 
-    // Update the timers at 60hz.
-    timerAccum += dt;
-    while (timerAccum >= timerDelta) {
-        if (chip8.delayTimer > 0) {
-            chip8.delayTimer--;
-        }
-        if (chip8.soundTimer > 0) {
-            chip8.soundTimer--;
-        }
-
-        timerAccum -= dt;
+    // Execute CHIP8 instructions at correct rate.
+    for (int c = 0; (c < vm.cyclesPerTic) && !Chip8WaitingForKey(&vm.chip8);
+         c++) {
+        Chip8Cycle(&vm.chip8);
     }
 
-    // Execute CHIP8 instructions at correct rate.
-    int cycles = instructionsPerFrame;
-    while (cycles > 0 && !Chip8WaitingForKey(&chip8)) {
-        Chip8Cycle(&chip8);
-        cycles--;
+    // Update the timers at 60hz.
+    vm.timerAccum += deltaPerTic;
+    while (vm.timerAccum >= vm.timerDelta) {
+        if (vm.chip8.delayTimer > 0) {
+            vm.chip8.delayTimer--;
+        }
+        if (vm.chip8.soundTimer > 0) {
+            vm.chip8.soundTimer--;
+        }
+
+        vm.timerAccum -= deltaPerTic;
     }
 }
 
 uint8_t *VMGetDisplayPixels()
 {
-    assert(initialized);
+    assert(vm.initialized);
 
-    return chip8.display;
+    return vm.chip8.display;
 }
 
 int VMGetSoundTimer()
 {
-    assert(initialized);
+    assert(vm.initialized);
 
-    return (int)chip8.soundTimer;
+    return (int)vm.chip8.soundTimer;
 }
 
 void VMGetColorPalette(VMColorPalette outPalette)
 {
-    assert(initialized);
+    assert(vm.initialized);
 
-    memcpy(outPalette, palette, sizeof(VMColorPalette));
+    memcpy(outPalette, vm.palette, sizeof(VMColorPalette));
 }
 
 void VMSetKey(uint8_t key)
 {
-    assert(initialized);
+    assert(vm.initialized);
 
-    chip8.keys[key % 16] = 1;
-
-    if (Chip8WaitingForKey(&chip8)) {
-        uint8_t reg = chip8.waitingKey & 0x0F;
-        chip8.V[reg] = key;
-        chip8.waitingKey = 0;
-    }
+    vm.chip8.keys[key % 16] = 1;
 }
 
 void VMClearKey(uint8_t key)
 {
-    assert(initialized);
+    assert(vm.initialized);
 
-    chip8.keys[key % 16] = 0;
+    vm.chip8.keys[key % 16] = 0;
+
+    if (Chip8WaitingForKey(&vm.chip8)) {
+        vm.chip8.V[vm.chip8.waitingKey.reg] = key;
+        vm.chip8.waitingKey.waiting = 0;
+    }
 }
 
 void VMTogglePause(bool pause)
 {
-    assert(initialized);
+    assert(vm.initialized);
 
-    paused = pause;
+    vm.paused = pause;
 }

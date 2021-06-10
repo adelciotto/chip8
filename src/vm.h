@@ -24,14 +24,14 @@ typedef enum {
 typedef uint32_t VMColorPalette[2];
 
 // VMInit() - Initialises the CHIP-8 VM.
-void VMInit(int cycles, int refreshRate, VMColorPaletteType paletteType);
+void VMInit(int cyclesPerTic, VMColorPaletteType paletteType);
 
 // VMLoadRom() - Loads a ROM from the given filepath into the CHIP8 system.
 // Returns 0 on success and -1 on failure.
 int VMLoadRom(const char *filePath);
 
-// VMUpdate() - Updates the CHIP-8 CPU and timers.
-void VMUpdate(double dt);
+// VMTic() - Updates the CHIP-8 CPU and timers.
+void VMTic(double deltaPerTic);
 
 // VMGetDisplayPixels() - Returns a pointer to the display memory from the CHIP-8.
 uint8_t *VMGetDisplayPixels();
