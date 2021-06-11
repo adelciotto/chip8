@@ -3,10 +3,7 @@
 struct VM {
     Chip8 chip8;
     VMColorPalette palette;
-
-    int cyclesPerTic;
-    double timerDelta;
-    double timerAccum;
+    int cyclesPerTick;
 
     bool paused;
     bool initialized;
@@ -28,14 +25,11 @@ static VMColorPalette palettes[] = {
 };
 // clang-format on
 
-void VMInit(int cyclesPerTic, VMColorPaletteType paletteType)
+void VMInit(int cyclesPerTick, VMColorPaletteType paletteType)
 {
     Chip8Init(&vm.chip8);
     memcpy(vm.palette, palettes[paletteType], sizeof(VMColorPalette));
-
-    vm.cyclesPerTic = cyclesPerTic;
-    vm.timerDelta = 1.0 / (double)CHIP8_TIMER_FREQ;
-    vm.timerAccum = 0;
+    vm.cyclesPerTick = cyclesPerTick;
 
     vm.paused = false;
     vm.initialized = true;
@@ -90,7 +84,7 @@ error:
     return -1;
 }
 
-void VMTic(double deltaPerTic)
+void VMTick()
 {
     assert(vm.initialized);
 
@@ -99,22 +93,17 @@ void VMTic(double deltaPerTic)
     }
 
     // Execute CHIP8 instructions at correct rate.
-    for (int c = 0; (c < vm.cyclesPerTic) && !Chip8WaitingForKey(&vm.chip8);
+    for (int c = 0; (c < vm.cyclesPerTick) && !Chip8WaitingForKey(&vm.chip8);
          c++) {
         Chip8Cycle(&vm.chip8);
     }
 
-    // Update the timers at 60hz.
-    vm.timerAccum += deltaPerTic;
-    while (vm.timerAccum >= vm.timerDelta) {
-        if (vm.chip8.delayTimer > 0) {
-            vm.chip8.delayTimer--;
-        }
-        if (vm.chip8.soundTimer > 0) {
-            vm.chip8.soundTimer--;
-        }
-
-        vm.timerAccum -= deltaPerTic;
+    // Update the timers.
+    if (vm.chip8.delayTimer > 0) {
+        vm.chip8.delayTimer--;
+    }
+    if (vm.chip8.soundTimer > 0) {
+        vm.chip8.soundTimer--;
     }
 }
 

@@ -8,6 +8,8 @@
 #include "chip8.h"
 #include "def.h"
 
+#define VM_TICK_FREQUENCY 60
+
 typedef enum {
     VMCOLOR_PALETTE_ORIGINAL,
     VMCOLOR_PALETTE_NOKIA,
@@ -24,14 +26,14 @@ typedef enum {
 typedef uint32_t VMColorPalette[2];
 
 // VMInit() - Initialises the CHIP-8 VM.
-void VMInit(int cyclesPerTic, VMColorPaletteType paletteType);
+void VMInit(int cyclesPerTick, VMColorPaletteType paletteType);
 
 // VMLoadRom() - Loads a ROM from the given filepath into the CHIP8 system.
 // Returns 0 on success and -1 on failure.
 int VMLoadRom(const char *filePath);
 
-// VMTic() - Updates the CHIP-8 CPU and timers.
-void VMTic(double deltaPerTic);
+// VMTick() - Updates the CHIP-8 CPU and timers.
+void VMTick();
 
 // VMGetDisplayPixels() - Returns a pointer to the display memory from the CHIP-8.
 uint8_t *VMGetDisplayPixels();

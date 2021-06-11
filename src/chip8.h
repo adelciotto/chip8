@@ -9,11 +9,10 @@
 
 #define CHIP8_W 64
 #define CHIP8_H 32
-#define CHIP8_TIMER_FREQ 60
 #define CHIP8_USERMEM_START 0x200
 #define CHIP8_USERMEM_END 0xFFF
 #define CHIP8_USERMEM_TOTAL (CHIP8_USERMEM_END - CHIP8_USERMEM_START)
-#define CHIP8_STACK_MAX 12
+#define CHIP8_STACK_MAX 16
 
 typedef union tChip8WaitingKey {
     uint8_t val;
