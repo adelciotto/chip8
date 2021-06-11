@@ -20,16 +20,6 @@ static const char *selectedPaletteName = "nokia";
 static void AtExit(void);
 static void ParseCommandArgs(int argc, char *argv[]);
 
-static uint64_t GetPerformanceCounter()
-{
-    return SDL_GetPerformanceCounter();
-}
-
-static double GetElapsedSeconds(uint64_t end, uint64_t start)
-{
-    return (double)(end - start) / (double)SDL_GetPerformanceFrequency();
-}
-
 int main(int argc, char *argv[])
 {
     atexit(AtExit);

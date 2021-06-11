@@ -3,6 +3,18 @@
 
 #include "def.h"
 
+// Misc platform functions.
+
+static inline uint64_t GetPerformanceCounter()
+{
+    return SDL_GetPerformanceCounter();
+}
+
+static inline double GetElapsedSeconds(uint64_t end, uint64_t start)
+{
+    return (double)(end - start) / (double)SDL_GetPerformanceFrequency();
+}
+
 // Video functions.
 // Presents the CHIP8 display to the screen using SDL.
 

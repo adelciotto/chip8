@@ -99,17 +99,16 @@ static void DecodeAndExecOpcode(Chip8 *chip8, Opcode op)
     uint8_t *V = chip8->V;
     uint16_t *stack = chip8->stack;
 
-    if (u == 0) {
-        // 00E0 CLS - Clear the display.
-        if (op.val == 0x00E0) {
-            for (int i = 0; i < ARRAY_LEN(chip8->display); i++)
-                display[i] = 0;
-        }
-        // 0x00EE RET - Return from a subroutine.
-        if (op.val == 0x00EE) {
-            // Set PC to address at top of stack, then decrement SP.
-            chip8->PC = stack[chip8->SP-- % CHIP8_STACK_MAX];
-        }
+    // 00E0 CLS - Clear the display.
+    if (op.val == 0x00E0) {
+        for (int i = 0; i < ARRAY_LEN(chip8->display); i++)
+            display[i] = 0;
+    }
+    // 0x00EE RET - Return from a subroutine.
+    if (op.val == 0x00EE) {
+        // Set PC to address at top of stack, then decrement SP.
+        chip8->PC = stack[chip8->SP % CHIP8_STACK_MAX];
+        chip8->SP--;
     }
     // 1nnn JP, addr - Sets the PC to nnn.
     if (u == 1) {
@@ -117,8 +116,9 @@ static void DecodeAndExecOpcode(Chip8 *chip8, Opcode op)
     }
     // 2nnn CALL, addr - Calls the subroutine at nnn.
     if (u == 2) {
-        stack[++chip8->SP % CHIP8_STACK_MAX] =
-            chip8->PC; // Increment SP, then push current PC on top.
+        // Increment SP, then push current PC on top.
+        chip8->SP = chip8->SP + 1 % CHIP8_STACK_MAX;
+        stack[chip8->SP] = chip8->PC;
         chip8->PC = unnn.nnn;
     }
     // 3xkk SE Vx, byte - Skip next instruction if Vx == kk.
@@ -159,14 +159,14 @@ static void DecodeAndExecOpcode(Chip8 *chip8, Opcode op)
     if (u == 8 && (uint8_t)uxyn.n == 2) {
         V[uxyn.x] &= V[uxyn.y];
     }
-    // 8xy2 XOR Vx, Vy - Performs bitwise AND of Vx and Vy, then stores result in Vx.
+    // 8xy3 XOR Vx, Vy - Performs bitwise AND of Vx and Vy, then stores result in Vx.
     if (u == 8 && (uint8_t)uxyn.n == 3) {
         V[uxyn.x] ^= V[uxyn.y];
     }
     // 8xy4 ADD Vx, Vy - Adds Vy to Vx. Stores carry flag in VF.
     if (u == 8 && (uint8_t)uxyn.n == 4) {
-        int result = V[uxyn.x] += V[uxyn.y];
-        V[0xF] = (result > 255);
+        V[uxyn.x] += V[uxyn.y];
+        V[0xF] = (V[uxyn.x] > 255);
     }
     // 8xy5 SUB Vx, Vy - Subtracts Vy from Vx. Stores borrow flag in VF.
     if (u == 8 && (uint8_t)uxyn.n == 5) {
@@ -185,7 +185,7 @@ static void DecodeAndExecOpcode(Chip8 *chip8, Opcode op)
     }
     // 8xyE SHL Vx - Stores Vx msb in VF, then shifts Vx to the left by 1.
     if (u == 8 && (uint8_t)uxyn.n == 0x0E) {
-        V[0xF] = (V[uxyn.x] & (1 << 7));
+        V[0xF] = (V[uxyn.x] & (1 << 7)) ? 1 : 0;
         V[uxyn.x] <<= 1;
     }
     // 9xy0 SNE Vx, Vy - Skips the next instruction if Vx != Vy.
