@@ -8,8 +8,6 @@
 #include "options.h"
 #include "vm.h"
 
-//////////////////// BEGIN EVENT INTERFACE ////////////////////
-
 static void PollEvents();
 static void ExitHandler();
 
@@ -29,8 +27,6 @@ static inline double GetElapsedSeconds(uint64_t start, uint64_t end)
 {
     return (double)(end - start) / (double)globalPerformanceFreq;
 }
-
-//////////////////// END EVENT INTERFACE ////////////////////
 
 //////////////////// BEGIN VIDEO INTERFACE ////////////////////
 
@@ -117,8 +113,6 @@ static struct AudioDevice globalAudioDevice = { .ID = 0,
 
 int main(int argc, char *argv[])
 {
-    atexit(ExitHandler);
-
     Options options;
     OptionsCreateFromArgv(&options, argc, argv);
 
@@ -144,7 +138,8 @@ int main(int argc, char *argv[])
     VMInit(options.cyclesPerTick, options.palette);
     if (VMLoadRom(options.romPath) != 0) {
         fprintf(stderr, "Failed to load CHIP-8 rom %s!\n", options.romPath);
-        exit(EXIT_SUCCESS);
+        ExitHandler();
+        return EXIT_FAILURE;
     }
 
     // Credit to TylerGlaiel for the frame timing code that was used as a
@@ -232,6 +227,8 @@ int main(int argc, char *argv[])
             lastMetricsUpdateCounter = GetPerformanceCounter();
         }
     }
+
+    ExitHandler();
 
     return EXIT_SUCCESS;
 }
