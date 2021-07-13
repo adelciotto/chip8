@@ -118,15 +118,13 @@ CHIP8 --help
 Will print:
 
 ```
-CHIP-8 usage:
---rom [filepath:string]        - Load the ROM at 'filepath'. Defaults to opcode_test.ch8
---win_scale [scale:uint]       - Scale up the screen in windowed mode. Defaults to 8
---fullscreen [fullscreen:bool] - Start in fullscreen mode. Defaults to false
---cycles [cycles:uint]         - Cycles to run per frame given 60fps. Defaults to 20
-                                 Value is adjusted for real framerate automatically
---palette [palette:string]     - Use the selected color palette. Defaults to 'nokia'
-                                 Palettes: 'nokia','original','crt','hotdog','cga0','cga1'
---help                         - Print this help text and exit
+./CHIP8 usage:
+--help (-h): Print usage information
+--fullscreen (-f): Enable fullscreen mode. Defaults to off
+--rom (-r) <string>: Set the rom. Defaults to 'test_opcode.ch8'
+--winscale (-w) <uint>: Set the window scale factor. Defaults to 8
+--cycles (-c) <uint>: Cycles to run per tick given 60 ticks per second. Defaults to 20
+--palette (-p) <string>: Set the color palette. Defaults to 'nokia'. Palettes: 'nokia','original','lcd','crt','borland','octo','gray',''hotdog','cga0','cga1'
 ```
 
 ## Controls

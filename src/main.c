@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
     printf("Option 'fullscreen' set to %d\n", options.fullscreen);
     printf("Option 'rom_path' set to %s\n", options.romPath);
     printf("Option 'cycles' set to %d\n", options.cyclesPerTick);
-    printf("Option 'palette' set to %s\n", options.selectedPaletteName);
+    printf("Option 'palette' set to %s\n", options.paletteName);
 
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
         fprintf(stderr, "Failed to init SDL! %s\n", SDL_GetError());

@@ -8,8 +8,8 @@ typedef struct tOptions {
     bool fullscreen;
     const char *romPath;
     int cyclesPerTick;
+    const char *paletteName;
     VMColorPaletteType palette;
-    const char *selectedPaletteName;
 } Options;
 
 void OptionsCreateFromArgv(Options *options, int argc, char *argv[]);
