@@ -124,7 +124,7 @@ Will print:
 --rom (-r) <string>: Set the rom. Defaults to 'test_opcode.ch8'
 --winscale (-w) <uint>: Set the window scale factor. Defaults to 8
 --cycles (-c) <uint>: Cycles to run per tick given 60 ticks per second. Defaults to 20
---palette (-p) <string>: Set the color palette. Defaults to 'nokia'. Palettes: 'nokia','original','lcd','crt','borland','octo','gray',''hotdog','cga0','cga1'
+--palette (-p) <string>: Set the color palette. Defaults to 'nokia'. Palettes: 'nokia','original','lcd','crt','borland','octo','gray','hotdog','cga0','cga1'
 ```
 
 ## Controls

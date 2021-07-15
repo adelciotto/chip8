@@ -5,7 +5,7 @@
 
 #include <stdio.h> // For FILE*
 
-#define ADC_ARGP_VERSION "0.2.0"
+#define ADC_ARGP_VERSION "0.3.0"
 
 typedef enum {
         ADC_ARGP_TYPE_HELP,

@@ -37,7 +37,7 @@ void OptionsCreateFromArgv(Options *options, int argc, char *argv[])
         ADC_ARGP_OPTION(
             "palette", "p", ADC_ARGP_TYPE_STRING, &paletteName,
             "Set the color palette. Defaults to 'nokia'. "
-            "Palettes: 'nokia','original','lcd','crt','borland','octo','gray',''hotdog','cga0','cga1'")
+            "Palettes: 'nokia','original','lcd','crt','borland','octo','gray','hotdog','cga0','cga1'")
     };
 
     adc_argp_parser *parser = adc_argp_new_parser(opts, ADC_ARGP_COUNT(opts));
