@@ -36,17 +36,25 @@
 #include <math.h>
 
 // Allow override of assert.
-#ifndef ADC_ARGP_ASSERT
+#ifndef ADC_ASSERT
 #include <assert.h>
-#define ADC_ARGP_ASSERT(x) assert(x)
+#define ADC_ASSERT(x) assert(x)
 #endif
 
 // Allow override of malloc and free.
-#ifndef ADC_ARGP_MALLOC
-#define ADC_ARGP_MALLOC(sz) malloc(sz)
+#if defined(ADC_MALLOC) && defined(ADC_FREE)
+// ok
+#elif !defined(ADC_MALLOC) && !defined(ADC_FREE)
+// ok
+#else
+#error "Must define all or none of ADC_MALLOC and ADC_FREE."
 #endif
-#ifndef ADC_ARGP_FREE
-#define ADC_ARGP_FREE(p) free(p)
+
+#ifndef ADC_MALLOC
+#define ADC_MALLOC(sz) malloc(sz)
+#endif
+#ifndef ADC_FREE
+#define ADC_FREE(p) free(p)
 #endif
 
 // Allow override of max errors.
@@ -96,16 +104,16 @@ void print_help(adc_argp_parser *parser);
 
 adc_argp_parser *adc_argp_new_parser(adc_argp_option *opts,
                                      unsigned int opts_len) {
-        ADC_ARGP_ASSERT(opts);
+        ADC_ASSERT(opts);
         for (unsigned int i = 0; i < opts_len; i++) {
-                ADC_ARGP_ASSERT(opts[i].name);
-                ADC_ARGP_ASSERT(opts[i].shortname);
-                ADC_ARGP_ASSERT(opts[i].valtype >= 0 &&
-                                opts[i].valtype < ADC_ARGP_TYPE_MAX);
-                ADC_ARGP_ASSERT(opts[i].desc);
+                ADC_ASSERT(opts[i].name);
+                ADC_ASSERT(opts[i].shortname);
+                ADC_ASSERT(opts[i].valtype >= 0 &&
+                           opts[i].valtype < ADC_ARGP_TYPE_MAX);
+                ADC_ASSERT(opts[i].desc);
         }
 
-        adc_argp_parser *parser = ADC_ARGP_MALLOC(sizeof(*parser));
+        adc_argp_parser *parser = ADC_MALLOC(sizeof(*parser));
         if (!parser)
                 return NULL;
 
@@ -118,7 +126,7 @@ adc_argp_parser *adc_argp_new_parser(adc_argp_option *opts,
 
 void adc_argp_destroy_parser(adc_argp_parser **parser) {
         if (*parser) {
-                ADC_ARGP_FREE(*parser);
+                ADC_FREE(*parser);
         }
         *parser = NULL;
 }
@@ -130,9 +138,9 @@ void adc_argp_destroy_parser(adc_argp_parser **parser) {
         }
 
 int adc_argp_parse(adc_argp_parser *parser, int argc, const char *argv[]) {
-        ADC_ARGP_ASSERT(parser);
-        ADC_ARGP_ASSERT(argv);
-        ADC_ARGP_ASSERT(parser->opts);
+        ADC_ASSERT(parser);
+        ADC_ASSERT(argv);
+        ADC_ASSERT(parser->opts);
 
         // Do nothing if the user supplies an empty options table.
         if (parser->opts_len == 0)
@@ -210,8 +218,8 @@ static const char *argp_type_string(adc_argp_type type) {
 }
 
 void adc_argp_print_errors(adc_argp_parser *parser, FILE *stream) {
-        ADC_ARGP_ASSERT(parser);
-        ADC_ARGP_ASSERT(stream);
+        ADC_ASSERT(parser);
+        ADC_ASSERT(stream);
 
         fprintf(stream, "adc_argp_parse errors:\n");
 
@@ -220,18 +228,18 @@ void adc_argp_print_errors(adc_argp_parser *parser, FILE *stream) {
 
                 switch (err->type) {
                 case ERROR_OPT_UNKNOWN:
-                        ADC_ARGP_ASSERT(err->argv);
+                        ADC_ASSERT(err->argv);
                         fprintf(stream, "Unknown option: '%s'\n", err->argv);
                         break;
                 case ERROR_ARG_MISSING:
-                        ADC_ARGP_ASSERT(err->opt);
+                        ADC_ASSERT(err->opt);
                         fprintf(stream,
                                 "Argument expected for the --%s option\n",
                                 err->opt->name);
                         break;
                 case ERROR_ARG_INVALID:
-                        ADC_ARGP_ASSERT(err->opt);
-                        ADC_ARGP_ASSERT(err->argv);
+                        ADC_ASSERT(err->opt);
+                        ADC_ASSERT(err->argv);
                         fprintf(
                             stream,
                             "Invalid %s with value '%s' for the --%s option\n",
@@ -239,8 +247,8 @@ void adc_argp_print_errors(adc_argp_parser *parser, FILE *stream) {
                             err->opt->name);
                         break;
                 case ERROR_ARG_INVALID_BOOL:
-                        ADC_ARGP_ASSERT(err->opt);
-                        ADC_ARGP_ASSERT(err->argv);
+                        ADC_ASSERT(err->opt);
+                        ADC_ASSERT(err->argv);
                         fprintf(
                             stream,
                             "Invalid bool with value '%s' for the --%s option, "
@@ -248,16 +256,16 @@ void adc_argp_print_errors(adc_argp_parser *parser, FILE *stream) {
                             err->argv, err->opt->name);
                         break;
                 case ERROR_ARG_NEGATIVE_UINT:
-                        ADC_ARGP_ASSERT(err->opt);
-                        ADC_ARGP_ASSERT(err->argv);
+                        ADC_ASSERT(err->opt);
+                        ADC_ASSERT(err->argv);
                         fprintf(stream,
                                 "Negative uint with value '%s' for the --%s "
                                 "option\n",
                                 err->argv, err->opt->name);
                         break;
                 case ERROR_ARG_OUT_OF_RANGE:
-                        ADC_ARGP_ASSERT(err->opt);
-                        ADC_ARGP_ASSERT(err->argv);
+                        ADC_ASSERT(err->opt);
+                        ADC_ASSERT(err->argv);
                         fprintf(stream,
                                 "Out of range %s with value '%s' for the --%s "
                                 "option\n",
@@ -265,8 +273,8 @@ void adc_argp_print_errors(adc_argp_parser *parser, FILE *stream) {
                                 err->opt->name);
                         break;
                 case ERROR_ARG_UNDERFLOW:
-                        ADC_ARGP_ASSERT(err->opt);
-                        ADC_ARGP_ASSERT(err->argv);
+                        ADC_ASSERT(err->opt);
+                        ADC_ASSERT(err->argv);
                         fprintf(stream,
                                 "Underflow has occurred in %s with value '%s' "
                                 "for the --%s option\n",
@@ -281,8 +289,8 @@ void adc_argp_print_errors(adc_argp_parser *parser, FILE *stream) {
 #define STRING_EQL(a, b) (strcmp(a, b) == 0)
 
 static int string_has_prefix(const char *str, const char *prefix) {
-        ADC_ARGP_ASSERT(str);
-        ADC_ARGP_ASSERT(prefix);
+        ADC_ASSERT(str);
+        ADC_ASSERT(prefix);
 
         const char *strp = str;
         const char *prefixp = prefix;
@@ -301,8 +309,8 @@ static int string_has_prefix(const char *str, const char *prefix) {
 }
 
 static int find_opt(const char *argv, adc_argp_option *opts, int opts_len) {
-        ADC_ARGP_ASSERT(opts);
-        ADC_ARGP_ASSERT(argv);
+        ADC_ASSERT(opts);
+        ADC_ASSERT(argv);
 
         // Options must begin with either '--' (long names) or '-' (short
         // names).
@@ -326,7 +334,7 @@ static int find_opt(const char *argv, adc_argp_option *opts, int opts_len) {
 }
 
 static int parse_bool(int *out, const char *argv) {
-        ADC_ARGP_ASSERT(argv);
+        ADC_ASSERT(argv);
 
         // Accept 'true' and 'false' strings are valid bool args.
         if (STRING_EQL(argv, "true")) {
@@ -347,7 +355,7 @@ static int parse_bool(int *out, const char *argv) {
 }
 
 static int parse_int(int *out, const char *argv) {
-        ADC_ARGP_ASSERT(argv);
+        ADC_ASSERT(argv);
 
         char *endptr;
         long result = strtol(argv, &endptr, 0);
@@ -362,7 +370,7 @@ static int parse_int(int *out, const char *argv) {
 }
 
 static int parse_uint(unsigned int *out, const char *argv) {
-        ADC_ARGP_ASSERT(argv);
+        ADC_ASSERT(argv);
 
         // Reject negative args for uint options.
         if (strchr(argv, '-'))
@@ -381,7 +389,7 @@ static int parse_uint(unsigned int *out, const char *argv) {
 }
 
 static int parse_float(float *out, const char *argv) {
-        ADC_ARGP_ASSERT(argv);
+        ADC_ASSERT(argv);
 
         char *endptr;
         errno = 0;
@@ -399,7 +407,7 @@ static int parse_float(float *out, const char *argv) {
 }
 
 static int parse_double(double *out, const char *argv) {
-        ADC_ARGP_ASSERT(argv);
+        ADC_ASSERT(argv);
 
         char *endptr;
         errno = 0;
@@ -418,7 +426,7 @@ static int parse_double(double *out, const char *argv) {
 
 static void add_error(adc_argp_parser *parser, error_type type,
                       const adc_argp_option *opt, const char *argv) {
-        ADC_ARGP_ASSERT(parser);
+        ADC_ASSERT(parser);
 
         if (parser->errors_len >= ADC_ARGP_MAX_ERRORS)
                 return;
@@ -430,7 +438,7 @@ static void add_error(adc_argp_parser *parser, error_type type,
 }
 
 void print_help(adc_argp_parser *parser) {
-        ADC_ARGP_ASSERT(parser);
+        ADC_ASSERT(parser);
 
         fprintf(stdout, "%s usage:\n", parser->progname);
 
