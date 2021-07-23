@@ -1,44 +1,44 @@
 // adc_argp command-line argument parsing library by Anthony Del Ciotto.
 
-#ifndef _ADC_ARGP_H
+#ifndef _ADC_ARGP_H_
 #define _ADC_ARGP_H_
 
 #include <stdio.h> // For FILE*
 
-#define ADC_ARGP_VERSION "0.3.0"
+#define ADC_ARGP_VERSION_MAJOR 0
+#define ADC_ARGP_VERSION_MINOR 3
+#define ADC_ARGP_VERSION_PATCH 1
 
 typedef enum {
-        ADC_ARGP_TYPE_HELP,
-        ADC_ARGP_TYPE_FLAG,
-        ADC_ARGP_TYPE_BOOL,
-        ADC_ARGP_TYPE_STRING,
-        ADC_ARGP_TYPE_INT,
-        ADC_ARGP_TYPE_UINT,
-        ADC_ARGP_TYPE_FLOAT,
-        ADC_ARGP_TYPE_DOUBLE,
-        ADC_ARGP_TYPE_MAX
+  ADC_ARGP_TYPE_HELP,
+  ADC_ARGP_TYPE_FLAG,
+  ADC_ARGP_TYPE_BOOL,
+  ADC_ARGP_TYPE_STRING,
+  ADC_ARGP_TYPE_INT,
+  ADC_ARGP_TYPE_UINT,
+  ADC_ARGP_TYPE_FLOAT,
+  ADC_ARGP_TYPE_DOUBLE,
+  ADC_ARGP_TYPE_MAX
 } adc_argp_type;
 
 typedef struct {
-        const char *name;
-        const char *shortname;
-        adc_argp_type valtype;
-        void *val;
-        const char *desc;
+  const char *name;
+  const char *shortname;
+  adc_argp_type valtype;
+  void *val;
+  const char *desc;
 } adc_argp_option;
 
 #define ADC_ARGP_OPTION(name, sname, type, val, desc)                          \
-        (adc_argp_option) {                                                    \
-                (name), (sname), (type), (val), (desc)                         \
-        }
+  (adc_argp_option) { (name), (sname), (type), (val), (desc) }
 #define ADC_ARGP_HELP()                                                        \
-        ADC_ARGP_OPTION("help", "h", ADC_ARGP_TYPE_HELP, NULL,                 \
-                        "Print usage information")
+  ADC_ARGP_OPTION("help", "h", ADC_ARGP_TYPE_HELP, NULL,                       \
+                  "Print usage information")
 
 typedef struct adc_argp_parser adc_argp_parser;
 
 #define ADC_ARGP_COUNT(x)                                                      \
-        ((sizeof(x) / sizeof(0 [x])) / ((size_t)(!(sizeof(x) % sizeof(0 [x])))))
+  ((sizeof(x) / sizeof(0 [x])) / ((size_t)(!(sizeof(x) % sizeof(0 [x])))))
 
 #ifdef __cplusplus
 extern "C" {
