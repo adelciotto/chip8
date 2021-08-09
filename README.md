@@ -1,4 +1,4 @@
-CHIP-8
+chip8
 ========================
 
 A CHIP-8 emulator written in C for PC.
@@ -106,19 +106,19 @@ make
 # Usage
 
 ```shell
-CHIP8 --rom /path/to/rom.ch8
+chip8 --rom /path/to/rom.ch8
 ```
 
 For a list of command line options and usage help:
 
 ```shell
-CHIP8 --help
+chip8 --help
 ```
 
 Will print:
 
 ```
-./CHIP8 usage:
+./chip8 usage:
 --help (-h): Print usage information
 --fullscreen (-f): Enable fullscreen mode. Defaults to off
 --rom (-r) <string>: Set the rom. Defaults to 'test_opcode.ch8'
@@ -129,7 +129,7 @@ Will print:
 
 ## Controls
 
-### CHIP-8
+### Chip8
 
 ```
 Chip-8 Key  Keyboard
